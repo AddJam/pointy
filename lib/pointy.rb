@@ -16,6 +16,8 @@ module Pointy
   #   long: float
   # }
   def self.route(from, to, opts={})
+    return if default_params[:key].nil? and opts[:key].nil?
+
     # Format points for Google API
     opts.merge!({
       origin: "#{from[:lat]},#{from[:long]}",
@@ -33,22 +35,23 @@ module Pointy
     legs = route['legs']
     return if legs.nil? or legs.empty?
 
-    points = []
-    legs.each do |leg|
+    # Accumulate all points
+    legs.inject([]) do |all_points, leg|
       steps = leg['steps']
-      next unless steps
-      steps.each_with_index do |step, index|
-        polyline = step['polyline']['points']
-        decoded_poly = Polylines::Decoder.decode_polyline(polyline)
-        points += decoded_poly.map do |coord|
-          {
-            lat: coord.first,
-            long: coord.last
-          }
+      if !steps.nil? and !steps.empty?
+        steps.each_with_index do |step, index|
+          polyline = step['polyline']['points']
+          decoded_poly = Polylines::Decoder.decode_polyline(polyline)
+          all_points += decoded_poly.map do |coord|
+            {
+              lat: coord.first,
+              long: coord.last
+            }
+          end
         end
       end
-    end
 
-    points
+      all_points
+    end
   end
 end
