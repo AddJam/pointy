@@ -33,7 +33,9 @@ Or install it yourself as:
       long: -4.2590
     }
 
-The returned array of points are of the same format.
+The returned array of points are of the same format. If you would rather an
+array of
+[polylines](https://code.google.com/apis/maps/documentation/utilities/polylinealgorithm.html) then call `Pointy.route_polylines(from, to)` instead.
 
 You can also pass in any other query parameters accepted by Google, so you override the API key or transport mode
 
